@@ -266,8 +266,7 @@ export let hotelDetails = async (
               error
             );
           } else {
-            existHotelsData.hotelsListStatus=false;
-            await existHotelsData.save()
+           await existHotelsData.save()
             return res.status(200).json({
               code: res.statusCode,
               message: "pending exsit",
@@ -288,18 +287,37 @@ export let hotelDetails = async (
           const existHotelDetails: any = await draftStorage.findByIdAndUpdate(
             req.body.draftId
           );
-          // checking if requested document is exist or not
+          // checking if the requested document is exist or not
           if (!existHotelDetails) {
             return res.status(404).json({
               code: res.statusCode,
               message: "document not found for update",
             });
-          } else {
+          } else if(existHotelDetails.status&& existHotelDetails.hotelsListStatus) {
            let newData= req.body.hotelsList[0]
            let existData=existHotelDetails.hotelsList[existHotelDetails.hotelsList.length-1]
-console.log(existData.hotelAllRoomTypes)
+           console.log(existData.hotelAllRoomTypes)
             existHotelDetails.hotelsList.push(newData);
             existData.hotelAllRoomTypes =[...newData.hotelAllRoomtypes];
+            existHotelDetails.hotelsListStatus=false;
+
+            existHotelDetails.save();
+            return res.status(200).json({
+              code: res.statusCode,
+              message: "pending",
+              data: {
+                draftId: existHotelDetails._id,
+                updateddata: existHotelDetails,
+              },
+            });
+          }
+          else{
+            console.log("exist hotellist")
+            let newData= req.body.hotelsList[0]
+           let existData=existHotelDetails.hotelsList[existHotelDetails.hotelsList.length-1]
+           console.log(existData.hotelAllRoomTypes)
+            existData={...newData}
+            // existData.hotelAllRoomTypes =[...newData.hotelAllRoomtypes];
             existHotelDetails.hotelsListStatus=false;
 
             existHotelDetails.save();
@@ -368,31 +386,23 @@ console.log(existData.hotelAllRoomTypes)
             next(error);
           } else {
           // checking the document is exist with the adminemail
-            let existAdminDraft = await draftStorage.findOne({Adminemail: req.email,status:false}
-              
-              
-              
-              
-              
-              
-              
-              
-              
-              );
-            console.log("exist status",existAdminDraft)
+            let existAdminDraft = await draftStorage.findOne({Adminemail:req.email, status: false} );
+            console.log("exist status9888888888888888888888888888888",existAdminDraft)
             if (existAdminDraft && !existAdminDraft.status) {
               console.log("hello")
-              let existDraft: any = await draftStorage.findOneAndUpdate({
-                Adminemail: req.email,
+              let existDraft: any = await draftStorage.findOne({
+                Adminemail: req.email,status:false
               });
+              console.log("111111111111111111111111111111",existDraft)
               if (!existDraft) {
                 res.status(404).json({
                   code: res.statusCode,
                   status: "failed",
                   message: "document  not found for update ",
                 });
-                // updating the data to  the exist document
-              } else {
+              }
+                              // updating the data to  the exist document
+              else {
                 existDraft.hotelsListStatus=false
                 existDraft.status = false;
                 existDraft.country = value.country;
@@ -538,8 +548,14 @@ export let hotelDraftInfo = async (
     console.log(req.email)
     let { draftId } = req.params;
     console.log(draftId,req.email);
-    if (draftId) {
+     if (draftId == "hotelDetails") {
+      console.log("total data")
+      let totalHotelList = await draftStorage.find({$and:[{status:true},{hotelsListStatus:true}]});
+      console.log("value", totalHotelList);
+    }
+    else if (draftId) {
       const getDraft: any = await draftStorage.findOne({$and :[{Adminemail: req.email},{_id:draftId}] });
+      console.log(getDraft)
       if (!getDraft.status) {
         return res.status(200).json({
           code: res.statusCode,
@@ -556,11 +572,6 @@ export let hotelDraftInfo = async (
           data: getDraft.hotelsList[getDraft.hotelsList.length - 1],
         });
       }
-    } else if (draftId === "hotelDetails") {
-      let totalHotelList = await draftStorage.find({
-        $and: [{ status: true }],
-      });
-      console.log("value", totalHotelList);
     }
   } catch (error) {
     throw new CustomError("internal server error", 500, "failed", error);
