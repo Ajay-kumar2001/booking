@@ -21,7 +21,7 @@ interface HotelCategory {
 }
 
 interface HouseRules {
-  rule: string
+  rule: string;
 }
 
 interface PackageOption {
@@ -32,11 +32,10 @@ interface PackageOption {
   packageOriginalPrice: number;
 }
 
-
 export interface HotelDocument extends Document {
   status: boolean;
   hotelsListStatus: boolean;
-  Adminemail: string|undefined;
+  Adminemail: string | undefined;
   country: string;
   state: string;
   pincode: string;
@@ -44,24 +43,33 @@ export interface HotelDocument extends Document {
   apartmentname: string;
   streetname: string;
   hotelsList: {
-    hotelName:string,
+    hotelName: string;
     hotelAddress: string;
     hotelPrice: string;
     originalHotelPrice: string;
     hotelImage: string;
     roomperguest: string;
-    hotelRelatedImages: string[],
+    hotelFullAddress: {
+      country: string;
+      state: string;
+      form: string;
+      city: string;
+      pincode: string;
+      apartmentname: string;
+      streetname: string;
+    };
+    hotelRelatedImages: string[];
     rating: string;
     hotelType: string;
     hotelDescription: string;
     facilities: string[];
     hotelAllRoomTypes: HotelCategory[];
-     latitude:string,
-    longitude: string,
-     selectedFacilities:[string],
-    houserules: HouseRules[],
-    hotelNotAvailable:[string],
-hotelavailableDateUpto:string,
+    latitude: string;
+    longitude: string;
+    selectedFacilities: [string];
+    houserules: HouseRules[];
+    hotelNotAvailable: [string];
+    hotelavailableDateUpto: string;
     packageOptions: PackageOption[];
   }[];
 }

@@ -7,7 +7,7 @@ import {
   signupSchema,
   loginSchema,
   form1ValidationSchema,
-  form2ValidationSchema
+  form2ValidationSchema,
 } from "../validations/joiValidationSchemas";
 import draftStorage from "../models/draftModel";
 import HotelModel from "../models/hotelModel";
@@ -40,7 +40,7 @@ const createSenderToken = (
   res: Response,
   message: string
 ) => {
-  console.log(user)
+  console.log(user);
   const token = signToken(user);
   const cookiesOption = {
     expires: new Date(
@@ -230,7 +230,7 @@ export let hotelDetails = async (
   next: NextFunction
 ) => {
   try {
-    console.log(req.email)
+    console.log(req.email);
     const { form } = req.body;
     // const existAdminDraft=await draftStorage.findOne({Adminemail:req.email})
     const existDocument = await draftStorage.findOne({
@@ -240,9 +240,7 @@ export let hotelDetails = async (
         { city: req.body.city },
       ],
     });
-    const existDocumentWithId = await draftStorage.findById(
-      req.body.draftId
-    );
+    const existDocumentWithId = await draftStorage.findById(req.body.draftId);
     if (
       (form === "form1" || form === "form2" || form === "form3") &&
       ((existDocument && existDocument.status) ||
@@ -266,7 +264,7 @@ export let hotelDetails = async (
               error
             );
           } else {
-           await existHotelsData.save()
+            await existHotelsData.save();
             return res.status(200).json({
               code: res.statusCode,
               message: "pending exsit",
@@ -277,12 +275,12 @@ export let hotelDetails = async (
           // adding the form2 details to existing hotelsList
           // const {error,value}=form2ValidationSchema.validate(req.body)
           // if (err){
-            // throw new CustomError(
-              // "enter the valid details",
-              // 400,
-              // "failed",
-              // err
-            // );
+          // throw new CustomError(
+          // "enter the valid details",
+          // 400,
+          // "failed",
+          // err
+          // );
           // }
           const existHotelDetails: any = await draftStorage.findByIdAndUpdate(
             req.body.draftId
@@ -293,13 +291,19 @@ export let hotelDetails = async (
               code: res.statusCode,
               message: "document not found for update",
             });
-          } else if(existHotelDetails.status&& existHotelDetails.hotelsListStatus) {
-           let newData= req.body.hotelsList[0]
-           let existData=existHotelDetails.hotelsList[existHotelDetails.hotelsList.length-1]
-           console.log(existData.hotelAllRoomTypes)
+          } else if (
+            existHotelDetails.status &&
+            existHotelDetails.hotelsListStatus
+          ) {
+            let newData = req.body.hotelsList[0];
+            let existData =
+              existHotelDetails.hotelsList[
+                existHotelDetails.hotelsList.length - 1
+              ];
+            console.log(existData.hotelAllRoomTypes);
             existHotelDetails.hotelsList.push(newData);
-            existData.hotelAllRoomTypes =[...newData.hotelAllRoomtypes];
-            existHotelDetails.hotelsListStatus=false;
+            existData.hotelAllRoomTypes = [...newData.hotelAllRoomtypes];
+            existHotelDetails.hotelsListStatus = false;
 
             existHotelDetails.save();
             return res.status(200).json({
@@ -310,15 +314,17 @@ export let hotelDetails = async (
                 updateddata: existHotelDetails,
               },
             });
-          }
-          else{
-            console.log("exist hotellist")
-            let newData= req.body.hotelsList[0]
-           let existData=existHotelDetails.hotelsList[existHotelDetails.hotelsList.length-1]
-           console.log(existData.hotelAllRoomTypes)
-            existData={...newData}
+          } else {
+            console.log("exist hotellist");
+            let newData = req.body.hotelsList[0];
+            let existData =
+              existHotelDetails.hotelsList[
+                existHotelDetails.hotelsList.length - 1
+              ];
+            console.log(existData.hotelAllRoomTypes);
+            existData = { ...newData };
             // existData.hotelAllRoomTypes =[...newData.hotelAllRoomtypes];
-            existHotelDetails.hotelsListStatus=false;
+            existHotelDetails.hotelsListStatus = false;
 
             existHotelDetails.save();
             return res.status(200).json({
@@ -340,19 +346,20 @@ export let hotelDetails = async (
               message: "document not found for update",
             });
           } else {
-            const newData =req.body.hotelsList[0]
+            const newData = req.body.hotelsList[0];
 
-             const existData=existHotelData.hotelsList[existHotelData.hotelsList.length - 1]
-             existHotelData.hotelsListStatus=true
-              existData.latitude=newData.latitude
-              existData.longitude=newData.longitude
-              existData.houserules =[ ...newData.houserules] ;
-              existData.packageOptions =[ ...newData.packageOptions];
-              existData.selectedFacilities=[...newData.selectedFacilities]
-              existData.hotelNotAvailable=[...newData.hotelNotAvailable]  
-              existData.hotelavailableDateUpto=newData.hotelavailableDateUpto
-              existData.hotelsListStatus = true;
-              existHotelData.status = true;
+            const existData =
+              existHotelData.hotelsList[existHotelData.hotelsList.length - 1];
+            existHotelData.hotelsListStatus = true;
+            existData.latitude = newData.latitude;
+            existData.longitude = newData.longitude;
+            existData.houserules = [...newData.houserules];
+            existData.packageOptions = [...newData.packageOptions];
+            existData.selectedFacilities = [...newData.selectedFacilities];
+            existData.hotelNotAvailable = [...newData.hotelNotAvailable];
+            existData.hotelavailableDateUpto = newData.hotelavailableDateUpto;
+            existData.hotelsListStatus = true;
+            existHotelData.status = true;
             existHotelData.hotelsList[
               existHotelData.hotelsList.length - 1
             ].hotelsListStatus = true;
@@ -372,7 +379,7 @@ export let hotelDetails = async (
     } else {
       switch (form) {
         case "form1":
-          console.log("called")
+          console.log("called");
           // validating the form1 req body
           let { error, value } = form1ValidationSchema.validate(req.body);
           if (error) {
@@ -381,19 +388,19 @@ export let hotelDetails = async (
               400,
               "failed",
               error
-
             );
             next(error);
           } else {
-          // checking the document is exist with the adminemail
-            let existAdminDraft = await draftStorage.findOne({Adminemail:req.email, status: false} );
-            console.log("exist status9888888888888888888888888888888",existAdminDraft)
+            // checking the document is exist with the adminemail
+            let existAdminDraft = await draftStorage.findOne({
+              Adminemail: req.email,
+              status: false,
+            });
             if (existAdminDraft && !existAdminDraft.status) {
-              console.log("hello")
               let existDraft: any = await draftStorage.findOne({
-                Adminemail: req.email,status:false
+                Adminemail: req.email,
+                status: false,
               });
-              console.log("111111111111111111111111111111",existDraft)
               if (!existDraft) {
                 res.status(404).json({
                   code: res.statusCode,
@@ -401,9 +408,14 @@ export let hotelDetails = async (
                   message: "document  not found for update ",
                 });
               }
-                              // updating the data to  the exist document
+              // updating the data to  the exist document
               else {
-                existDraft.hotelsListStatus=false
+                console.log(
+                  "asaskfjfjd",
+                  existDraft.hotelsList.hotelFullAddress
+                );
+                existDraft.hotelsList.hotelFullAddress = { ...value };
+                existDraft.hotelsListStatus = false;
                 existDraft.status = false;
                 existDraft.country = value.country;
                 existDraft.state = value.state;
@@ -413,6 +425,10 @@ export let hotelDetails = async (
                 existDraft.apartmentname = value.apartmentname;
                 existDraft.streetname = value.streetname;
                 await existDraft.save();
+                console.log(
+                  "qwewretetrgddfgrgffhg",
+                  existDraft.hotelsList.hotelFullAddress
+                );
                 res.status(200).json({
                   code: res.statusCode,
                   status: "pending",
@@ -421,18 +437,18 @@ export let hotelDetails = async (
                 });
               }
             } else {
-              console.log("create a new data")
+              console.log("create a new data");
               // creating the new draftstorage and storing the data
               const newDraft = await new draftStorage();
               newDraft.status = false;
-              newDraft.hotelsListStatus=false;
-                newDraft.country = value.country;
-                newDraft.state = value.state;
-                newDraft.city = value.city;
-                newDraft.Adminemail = req.email;
-                newDraft.pincode = value.pincode;
-                newDraft.apartmentname = value.apartmentname;
-                newDraft.streetname = value.streetname;;
+              newDraft.hotelsListStatus = false;
+              newDraft.country = value.country;
+              newDraft.state = value.state;
+              newDraft.city = value.city;
+              newDraft.Adminemail = req.email;
+              newDraft.pincode = value.pincode;
+              newDraft.apartmentname = value.apartmentname;
+              newDraft.streetname = value.streetname;
               await newDraft.save();
               res.status(200).json({
                 code: res.statusCode,
@@ -459,9 +475,18 @@ export let hotelDetails = async (
                 message: "document  not found for update ",
               });
             } else {
-              existDraft.hotelsListStatus=false;
-              existDraft.hotelsList[0] ={...req.body.hotelsList[0] , hotelsListStatus: false};
-              existDraft.hotelsList[0].hotelAllRoomTypes=[...req.body.hotelsList[0].hotelAllRoomtypes]
+              console.log(
+                "adsfddgfgfgffgfgfh",
+                existDraft.hotelsList.hotelFullAddress
+              );
+              existDraft.hotelsListStatus = false;
+              existDraft.hotelsList[0] = {
+                ...req.body.hotelsList[0],
+                hotelsListStatus: false,
+              };
+              existDraft.hotelsList[0].hotelAllRoomTypes = [
+                ...req.body.hotelsList[0].hotelAllRoomtypes,
+              ];
               await existDraft.save();
               res.status(200).json({
                 code: res.statusCode,
@@ -477,7 +502,6 @@ export let hotelDetails = async (
               status: "failed",
               message: "document  not found for update ",
             });
-           
           }
           break;
         case "form3":
@@ -496,19 +520,18 @@ export let hotelDetails = async (
                 message: "document  not found for update ",
               });
             } else {
-              console.log()
-             const newData =req.body.hotelsList[0]
-             const existData=existDraft.hotelsList[0]
-              existData.latitude=newData.latitude
-              existData.longitude=newData.longitude
-              existData.houserules =[ ...newData.houserules] ;
-              existData.packageOptions =[ ...newData.packageOptions];
-              existData.selectedFacilities=[...newData.selectedFacilities]
-              existData.hotelNotAvailable=[...newData.hotelNotAvailable]  
-              existData.hotelavailableDateUpto=newData.hotelavailableDateUpto
+              console.log();
+              const newData = req.body.hotelsList[0];
+              const existData = existDraft.hotelsList[0];
+              existData.latitude = newData.latitude;
+              existData.longitude = newData.longitude;
+              existData.houserules = [...newData.houserules];
+              existData.packageOptions = [...newData.packageOptions];
+              existData.selectedFacilities = [...newData.selectedFacilities];
+              existData.hotelNotAvailable = [...newData.hotelNotAvailable];
+              existData.hotelavailableDateUpto = newData.hotelavailableDateUpto;
               existDraft.status = true;
-              existDraft.hotelsListStatus=true;
-
+              existDraft.hotelsListStatus = true;
 
               await existDraft.save();
 
@@ -539,33 +562,84 @@ export let hotelDetails = async (
 };
 
 // method for sending the draftstorage data
+/**
+ * Retrieves hotel draft information based on the given draftId and admin's email.
+ *
+ * @param {CustomRequest} req - The custom request object containing user input and data.
+ * @param {Response} res - The response object used to send the response to the client.
+ * @param {NextFunction} next - The next function in the middleware chain.
+ * @throws {CustomError} Throws a custom error with details if an internal server error occurs.
+ */
 export let hotelDraftInfo = async (
   req: CustomRequest,
   res: Response,
   next: NextFunction
 ) => {
   try {
-    console.log(req.email)
+    console.log(req.email);
     let { draftId } = req.params;
-    console.log(draftId,req.email);
-     if (draftId == "hotelDetails") {
-      console.log("total data")
-      let totalHotelList = await draftStorage.find({$and:[{status:true},{hotelsListStatus:true}]});
-      console.log("value", totalHotelList);
-    }
-    else if (draftId) {
-      const getDraft: any = await draftStorage.findOne({$and :[{Adminemail: req.email},{_id:draftId}] });
-      console.log(getDraft)
-      if (!getDraft.status) {
+    console.log(draftId, req.email);
+    if (draftId == "hoteldraftdetails") {
+      const draft: any = await draftStorage.findOne({
+        $and: [{ Adminemail: req.email }, { status: false }],
+      });
+      const existHotelListDraft: any = await draftStorage.findOne({
+        $and: [
+          { Adminemail: req.email },
+          { status: true },
+          { hotelsListStatus: false },
+        ],
+      });
+      if (draft && !draft.status) {
+        res.status(200).json({
+          code: res.statusCode,
+          status: "success",
+          message: "this is existing draft of this admin",
+          data: draft,
+        });
+      } else if (
+        existHotelListDraft &&
+        existHotelListDraft.status &&
+        !existHotelListDraft.hotelsListStatus
+      ) {
+        res.status(200).json({
+          code: res.statusCode,
+          status: "success",
+          message: "this is the existing draft of this admin",
+          data: existHotelListDraft.hotelsList[
+            existHotelListDraft.hotelsList.length - 1
+          ],
+        });
+      } else {
+        res.status(400).json({
+          code: res.statusCode,
+          status: "failed",
+          message: " no draft exist ",
+        });
+      }
+    } else if (draftId == "hoteltotaldetails") {
+      console.log("total data");
+      let totalHotelList = await draftStorage.find({
+        $and: [{ status: true }, { hotelsListStatus: true }],
+      });
+      res.status(200).json({
+        code: res.statusCode,
+        status: "success",
+        message: "total hotle  information",
+        data: totalHotelList,
+      });
+    } else if (draftId) {
+      const getDraft: any = await draftStorage.findOne({
+        $and: [{ Adminemail: req.email }, { _id: draftId }],
+      });
+      console.log(getDraft);
+      if (getDraft && !getDraft.status) {
         return res.status(200).json({
           code: res.statusCode,
           status: "success",
-          data:  getDraft ,
+          data: getDraft,
         });
-      } else if (
-        getDraft.status &&
-        !getDraft.hotelsListStatus
-      ) {
+      } else if (getDraft.status && !getDraft.hotelsListStatus) {
         return res.status(200).json({
           code: res.statusCode,
           status: "success",

@@ -25,6 +25,15 @@ const hotelSchema = new Schema<HotelDocument>({
       hotelType: String,
       hotelDescription: String,
       facilities: [String],
+      hotelFullAddress: {
+        country: String,
+        state: String,
+        form: String,
+        city: String,
+        pincode: String,
+        apartmentname: String,
+        streetname: String,
+    },
       hotelAllRoomTypes: [
         {
           hotelType: String,

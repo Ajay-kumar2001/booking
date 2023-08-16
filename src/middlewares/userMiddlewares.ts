@@ -25,7 +25,6 @@ export const tokenVerification =async (req: CustomRequest, res: any, next: any) 
             message: " invalid Token ",
           });
       } else {
-        console.log("verification ",decoded._doc.email )
         req.email=decoded._doc.email 
         // Convert to milliseconds
         const expirationTime = decoded.exp * 1000;
