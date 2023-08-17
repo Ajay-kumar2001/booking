@@ -33,7 +33,7 @@ const hotelSchema = new Schema<HotelDocument>({
         pincode: String,
         apartmentname: String,
         streetname: String,
-    },
+      },
       hotelAllRoomTypes: [
         {
           hotelType: String,
@@ -56,24 +56,24 @@ const hotelSchema = new Schema<HotelDocument>({
           ],
         },
       ],
-    latitude:String,
-    longitude: String,
-    selectedFacilities:[String],
-      houserules:[
+      latitude: String,
+      longitude: String,
+      selectedFacilities: [String],
+      houserules: [
         {
-          rule:String
-        }
-      ], 
-       
+          rule: String,
+        },
+      ],
+
       packageOptions: [
         {
-          packageName: {name:String},
+          packageName: { name: String },
           packageOriginalPrice: Number,
           packageDiscountPrice: Number,
         },
       ],
-      hotelNotAvailable:[String],
-     hotelavailableDateUpto:String
+      hotelNotAvailable: [String],
+      hotelavailableDateUpto: String,
     },
   ],
 });
