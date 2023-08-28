@@ -10,9 +10,8 @@ import {
   form2ValidationSchema,
 } from "../validations/joiValidationSchemas";
 import draftStorage from "../models/draftModel";
-import HotelModel from "../models/hotelModel";
 import { CustomError } from "../utils/CustomError";
-import { createMainHotelData } from "../utils/createMainHotelData";
+import { ObjectId } from 'mongodb';
 
 /**
  *
@@ -207,7 +206,7 @@ export const uploades = (
     res.json({ status: "ok" });
     throw new CustomError("internal server error", 500, "failed", "");
   } catch (error) {
-    console.log("from 210 line",error);
+    console.log("from 210 line", error);
     next(error);
   }
 };
@@ -230,7 +229,6 @@ export let hotelDetails = async (
   try {
     console.log(req.email);
     const { form } = req.body;
-    // const existAdminDraft=await draftStorage.findOne({Adminemail:req.email})
     const existDocument = await draftStorage.findOne({
       $and: [
         { country: req.body.country },
@@ -253,7 +251,7 @@ export let hotelDetails = async (
       });
       switch (form) {
         case "form1":
-          const { error, value } = form1ValidationSchema.validate(req.body);
+          let { error, value } = form1ValidationSchema.validate(req.body);
           if (error) {
             throw new CustomError(
               "enter the valid details",
@@ -271,15 +269,17 @@ export let hotelDetails = async (
           }
         case "form2":
           // adding the form2 details to existing hotelsList
-          // const {error,value}=form2ValidationSchema.validate(req.body)
-          // if (err){
-          // throw new CustomError(
-          // "enter the valid details",
-          // 400,
-          // "failed",
-          // err
-          // );
-          // }
+           let {err,values}:any=form2ValidationSchema.validate(req.body)
+           if (err){
+           throw new CustomError(
+           "enter the valid details",
+           400,
+           "failed",
+            err
+           );
+           }else{
+            console.log(values)
+           }
           const existHotelDetails: any = await draftStorage.findByIdAndUpdate(
             req.body.draftId
           );
@@ -300,7 +300,7 @@ export let hotelDetails = async (
               ];
             console.log(existData.hotelAllRoomTypes);
             existHotelDetails.hotelsList.push(newData);
-            existData.hotelAllRoomTypes = [...newData.hotelAllRoomtypes];
+            existData.hotelAllRoomTypes = [...newData.hotelAllRoomTypes];
             existHotelDetails.hotelsListStatus = false;
 
             existHotelDetails.save();
@@ -320,7 +320,6 @@ export let hotelDetails = async (
               ];
             console.log(existData.hotelAllRoomTypes);
             existData = { ...newData };
-            // existData.hotelAllRoomTypes =[...newData.hotelAllRoomtypes];
             existHotelDetails.hotelsListStatus = false;
 
             existHotelDetails.save();
@@ -460,23 +459,16 @@ export let hotelDetails = async (
                 message: "document  not found for update ",
               });
             } else {
-             let  hotelFullAddress={
-                "country":existDraft.country,
-            "state":existDraft.state,
-            "city":existDraft.city,
-            "pincode":existDraft.pincode,
-            "apartmentname":existDraft.apartmentname,
-            "streetname":existDraft.streetname
-              }
+              console.log("ok form form2")
+              console.log("from 2 ",req.body.hotelsList[0].hotelPricesDetails)
               existDraft.hotelsListStatus = false;
               existDraft.hotelsList[0] = {
                 ...req.body.hotelsList[0],
                 hotelsListStatus: false,
               };
               existDraft.hotelsList[0].hotelAllRoomTypes = [
-                ...req.body.hotelsList[0].hotelAllRoomtypes,
+                ...req.body.hotelsList[0].hotelAllRoomTypes,
               ];
-              existDraft.hotelsList[0].hotelFullAddress={...hotelFullAddress}
               await existDraft.save();
               res.status(200).json({
                 code: res.statusCode,
@@ -544,9 +536,9 @@ export let hotelDetails = async (
       }
     }
   } catch (error) {
-    console.log(" from line  539",error);
-    next(error);
-    // throw new CustomError("internal server error",500,"failed" ,error)
+    console.log(" from line  539", "error");
+    next(error)
+    throw new CustomError("bad request",400,"failed" ,error)
   }
 };
 
@@ -565,6 +557,8 @@ export let hotelDraftInfo = async (
   next: NextFunction
 ) => {
   try {
+    let {city,check_in_date,check_out_date}:any=req.query
+    console.log(city,check_in_date,check_out_date)
     let { draftId } = req.params;
     console.log(draftId, req.email);
     if (draftId == "hoteldraftdetails") {
@@ -586,6 +580,7 @@ export let hotelDraftInfo = async (
           data: draft,
         });
       } else if (
+  
         existHotelListDraft &&
         existHotelListDraft.status &&
         !existHotelListDraft.hotelsListStatus
@@ -605,27 +600,87 @@ export let hotelDraftInfo = async (
           message: " no draft exist ",
         });
       }
-    } else if (draftId == "hoteltotaldetails") {
+    }else if(draftId=="totalhoteldetails"&&(city&&check_out_date&&check_in_date)){
       let totalHotelList = await draftStorage.find({
         $and: [{ status: true }, { hotelsListStatus: true }],
       });
+      if(totalHotelList.length){
+        let hoteldetails = totalHotelList.filter(
+          (item) =>
+            item.city.includes(city) 
+            
+        );
+        console.log("called form search")
+      res.status(200).json({
+        code: res.statusCode,
+        status: "success",
+        message: "total hotle  information",
+        data: hoteldetails,
+      });
+     
+    }
+    else{
+      res.status(404).json({
+        code: res.statusCode,
+        status: "failed",
+        message: "can't find the data",
+      });
+    }
+    
+    }
+     else if (draftId == "totalhoteldetails") {
+      let totalHotelList = await draftStorage.find({
+        $and: [{ status: true }, { hotelsListStatus: true }],
+      });
+      if(totalHotelList.length){
       res.status(200).json({
         code: res.statusCode,
         status: "success",
         message: "total hotle  information",
         data: totalHotelList,
       });
-    } else if (draftId) {
+     
+    }
+    else{
+      res.status(404).json({
+        code: res.statusCode,
+        status: "failed",
+        message: "can't find the data",
+      });
+    }
+    
+    }
+    else if(draftId=="hotelierhoteldetails"){
+      console.log("ok")
+       const hotelierHotelDetails= await draftStorage.find({
+        $and: [{Adminemail:req.email},{ status: true }, { hotelsListStatus: true }],
+      })
+    if(hotelierHotelDetails.length){
+      res.status(200).json({
+        code: res.statusCode,
+        status: "success",
+        data: hotelierHotelDetails
+      });
+    }
+    else{
+      res.status(404).json({
+        code: res.statusCode,
+        status: "failed",
+        message: "can't find the data",
+      });
+    }
+    } 
+    else if (draftId) {
       const getDraft: any = await draftStorage.findOne({
         $and: [{ Adminemail: req.email }, { _id: draftId }],
       });
-      if (getDraft && !getDraft.status) {
+      if (getDraft&&getDraft && !getDraft.status) {
         return res.status(200).json({
           code: res.statusCode,
           status: "success",
           data: getDraft,
         });
-      } else if (getDraft.status && !getDraft.hotelsListStatus) {
+      } else if (getDraft&& getDraft.status && !getDraft.hotelsListStatus) {
         return res.status(200).json({
           code: res.statusCode,
           status: "success",
@@ -637,3 +692,68 @@ export let hotelDraftInfo = async (
     throw new CustomError("internal server error", 500, "failed", error);
   }
 };
+
+
+export const updatingHotelDetails=async(req:CustomRequest,res:Response,next:NextFunction)=>{
+try{
+  // Your string representation of the ObjectId
+  const stringId :string= req.params.id
+  const form:any=req.query.form
+  // Convert the string to ObjectId
+const objectId = new ObjectId(stringId);
+const docimentObjectId=new ObjectId("64e6e73c03f1892287a15aef")
+console.log(objectId,form)
+switch(form){
+  case "form1":
+    const paylode=req.body
+    console.log(paylode)
+    const updated= await draftStorage.findByIdAndUpdate(req.params.id,{$set:req.body},{new:true,runValidators:true})
+    console.log(updated)
+    return res.status(200).json({code:res.statusCode,message:"form1 is updated" })
+  case "form2":
+    const documentId = docimentObjectId; // Replace with the actual document ID
+const hotelId = objectId;       // Replace with the actual hotel ID
+
+// const updatedData=await draftStorage.updateOne(
+//   {
+//     "_id": documentId,
+//     "hotelsList._id": hotelId
+//   },
+//   {
+//     $set: {
+//       ...req.body
+//     // "hotelsList.hotelPricesDetails":{...req.body.hotelsList[0].hotelPriceDetails},
+//     //   "hotelsList.hotelName":req.body.hotelsList[0].hotelName,
+//     //   "hotelsList.hotelPrice":req.body.hotelsList[0].hotelPrice,
+//       // ... update other fields as needed
+//     }
+//   }
+// );
+
+    
+//     console.log(updatedData);
+  const update =await draftStorage.aggregate([ { $unwind: "$hotelsList" },
+  {$match:{"_id":docimentObjectId,"hotelsList._id":objectId}},
+    {$set: { "hotelsList.$.hotelName": "asdfgh"}}]).exec()
+ console.log(update)
+    
+    return res.status(200).json({code:res.statusCode,message:"form2 is updated" })
+    case "form3":
+      return res.status(200).json({code:res.statusCode,message:"form3 is updated" })
+ // 
+
+                      
+
+  }
+  
+  
+
+}catch(error){
+  console.log(error)
+  throw new CustomError("internal server error", 500, "failed", error);
+
+  next(error)
+}
+}
+   
+

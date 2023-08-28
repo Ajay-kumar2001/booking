@@ -123,7 +123,7 @@ export const errorHandler = (
 ) => {
   if (err instanceof AbstractError) {
     const { statusCode, status, message, error } = err;
-
+   console.log("from middleware",error)
     return res.status(statusCode).json({
       code: statusCode,
       status: status,

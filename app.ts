@@ -10,7 +10,14 @@ import cors from "cors"
 const app = express();
 
 app.use(express.json());
-app.use(cors())
+const corsOptions = {
+  origin: '*',
+  methods: ['GET', 'POST', 'PUT', 'DELETE'], // You can customize allowed methods
+  // allowedHeaders: ['Content-Type', 'authorization',], // You can customize allowed headers
+  credentials: true,
+  optionsSuccessStatus: 200
+};
+app.use(cors(corsOptions))
 
 if (process.env.NODE_ENV === "development") {
   app.use(morgan("dev"));

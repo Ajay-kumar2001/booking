@@ -1,5 +1,5 @@
 import express from "express";
-import  { signup, login  ,uploades, hotelDetails ,hotelDraftInfo} from "../controllers/userController";
+import  { signup, login  ,uploades, hotelDetails ,hotelDraftInfo,updatingHotelDetails} from "../controllers/userController";
 import{ tokenVerification }from "../middlewares/userMiddlewares";
 const userRoute = express.Router();
 /**
@@ -82,4 +82,5 @@ userRoute.post("/login", login);
 userRoute.post("/hoteldetails",tokenVerification,hotelDetails)
 // userRoute.post("/uploads",uploads.array("file",12),uploades)
 userRoute.get("/hoteldetails/:draftId",tokenVerification,hotelDraftInfo)
+userRoute.patch("/hotels/:id",updatingHotelDetails)
 export default userRoute;
