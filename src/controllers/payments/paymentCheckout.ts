@@ -32,6 +32,7 @@ export const checkout = async (req: Request, res: Response): Promise<void> => {
           message: "order not created",
         });
   } catch (error) {
+    console.log(error)
     res.status(500).json({ message: "failed to order" });
   }
 };

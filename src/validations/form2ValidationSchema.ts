@@ -65,6 +65,11 @@ import joi from "joi";
 const hotelCategoryTypeSchema = joi.object({
   roomCategoryTypeTitle: joi.string().required(),
   roomDiscountInPercentage: joi.number().required(),
+  roomNumber:joi.string().required(),
+  roomOccupied:joi.boolean().required(),
+  roomPerChildren:joi.number().required(),
+   roomPerAdults:joi.number().required(),
+   roomNotAvailable:joi.array().items(joi.string()).required(),
   roomFacility: joi
     .array()
     .items(
@@ -79,6 +84,9 @@ roomOriginalPrice: joi.number().required(),
 });
 
 const hotelRoomSchema = joi.object({
+  totalRooms:joi.number(),
+  Occupied:joi.number(),
+  vacant:joi.number(),
   hotelImage: joi.string().required(),
   hotelRoomBedType: joi.string().required(),
   hotelRoomSize: joi.number().required(),

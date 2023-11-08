@@ -41,6 +41,10 @@ export const deletingParticularHotel = async (
       if (docId && hotelId) {
         const documentId: object = new ObjectId(docId);
         const particularHotelId: object = new ObjectId(hotelId);
+        const exist = await draftStorage.find({ $and: [
+          { _id: documentId },{"hotelsList._id":particularHotelId}
+      ],})
+        if(exist.length){
         const updatedDocument: HotelDocument | null =
           await draftStorage.findOneAndUpdate(
             { _id: documentId },
@@ -61,6 +65,9 @@ export const deletingParticularHotel = async (
             message: "Hotel deleted successfully",
           });
         }
+      }else{
+        res.status(404).json({code:res.statusCode,status:"failed",massage:"can't find hotel to delete"})
+      }
       } else if (docId) {
         const documentId: object = new ObjectId(docId);
         const deletedDocument: HotelDocument | null =
@@ -84,6 +91,7 @@ export const deletingParticularHotel = async (
       }
     }
   } catch (error) {
+    console.log(error)
     console.log("error in line no 69 in deleting");
     next(new CustomError(500, "failed", "internal server error", error));
   }

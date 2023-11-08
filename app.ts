@@ -8,6 +8,8 @@ import swaggerUi from "swagger-ui-express";
 import cookieParser from 'cookie-parser';
 import cors from "cors";
 import helmet from "helmet"
+import session from "express-session";
+import MongoStore from "connect-mongo";
 const app = express();
 app.use(cookieParser());
 app.use(express.json());
@@ -66,6 +68,21 @@ app.use(
   `${process.env.API_URL}/api-docs`,
   swaggerUi.serve,
   swaggerUi.setup(swaggerSpec)
+);
+const db_url: string = process.env.DB_URL || "";
+
+const store = MongoStore.create({
+  mongoUrl: db_url,
+  collectionName: "session",
+});
+app.use(
+  session({
+    secret: String(process.env.SESSION_KEY),
+    resave: false,
+    saveUninitialized: false,
+    store: store,
+    cookie: { expires: new Date(Date.now() + 300000) },
+  })
 );
 app.use(`${process.env.API_URL}/users`, userRoute);
 

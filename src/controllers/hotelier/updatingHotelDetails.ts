@@ -1,7 +1,7 @@
 import { Response, NextFunction } from "express";
 import { CustomRequest } from "../../utils/request-model";
 import { Form1Validaton } from "../../validations/joiValidationForForm1Update";
-import draftStorage from "../../models/draftModel";
+import draftStorage, { HotelDocument } from "../../models/draftModel";
 import { CustomError } from "../../utils/CustomError";
 import { ObjectId } from "mongodb";
 import { joiSchemaform2 } from "../../validations/joiValidationForForm2Update";
@@ -22,12 +22,10 @@ export const updatingHotelDetails = async (
   next: NextFunction
 ) => {
   try {
-    // Your string representation of the ObjectId
-
     const docId: string = req.params.id;
     const form: string = req.body.form;
     switch (form) {
-      //updating the form 1 data
+      /**updating the form 1 data*/
       case "form1":
         var { error, value } = Form1Validaton.validate(req.body);
         if (error) {
@@ -167,6 +165,5 @@ export const updatingHotelDetails = async (
     console.log("error from pudate");
     next(new CustomError(500, "failed", "internal server error", error));
 
-    next(error);
   }
 };

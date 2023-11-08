@@ -144,7 +144,7 @@ export let hotelDetails = async (
             existData.hotelNotAvailable = [...newData.hotelNotAvailable];
             existData.hotelavailableDateUpto = newData.hotelavailableDateUpto;
             existData.hotelStatus=true
-            existData.hotelsListStatus = true;
+            existHotelData.hotelsListStatus = true;
             existHotelData.status = true;
             existHotelData.hotelsList[
               existHotelData.hotelsList.length - 1

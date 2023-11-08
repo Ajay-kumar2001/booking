@@ -3,6 +3,11 @@ import Joi from "joi";
 const hotelCategoryTypeSchema = Joi.object({
   roomCategoryTypeTitle: Joi.string(),
   roomDiscountInPercentage: Joi.number(),
+  roomNumber:Joi.string().required(),
+  roomOccupied:Joi.boolean().required(),
+  roomPerChildren:Joi.number().required(),
+   roomPerAdults:Joi.number().required(),
+   roomNotAvailable:Joi.array().items(Joi.string()).required(),
   roomFacility: Joi.array().items(
     Joi.object({
       title: Joi.string(),
@@ -14,6 +19,9 @@ const hotelCategoryTypeSchema = Joi.object({
 });
 
 const hotelRoomTypeSchema = Joi.object({
+  totalRooms:Joi.string(),
+  Occupied:Joi.number(),
+  vacant:Joi .number(),
   hotelImage: Joi.string(),
   hotelRoomBedType: Joi.string(),
   hotelRoomSize: Joi.number(),
@@ -44,7 +52,7 @@ const hotelSchema = Joi.object({
   roomperguest: Joi.number(),
   hotelAllRoomTypes: Joi.array().items(hotelRoomTypeSchema),
 });
-
+    
 const hotelsListSchema = Joi.array().items(hotelSchema);
 
 export const joiSchemaform2 = Joi.object({

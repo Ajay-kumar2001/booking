@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+import mongoose, { Model } from "mongoose";
 import validator from "validator";
 import { User } from "../utils/user-interface";
 const UserSchema = new mongoose.Schema<User>({
@@ -34,6 +34,6 @@ const UserSchema = new mongoose.Schema<User>({
   }
 });
 
-const userModel = mongoose.model("users", UserSchema);
+const userModel:Model<User> = mongoose.model("users", UserSchema);
 
 export default userModel;

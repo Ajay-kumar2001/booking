@@ -4,6 +4,7 @@
 
 import { number } from "joi";
 import mongoose, { Schema, Document, Model } from "mongoose";
+import { guestReviewSchema } from "./guestReviewMdel";
 
 interface Facility {
   title: string;
@@ -11,6 +12,13 @@ interface Facility {
 }
 
 interface HotelFacility {
+  roomNumber:string,
+  customerEmail:string,
+  roomOccupied:boolean,
+  checkIn:boolean,
+    roomPerChildren:number,
+   roomPerAdults:number,
+   roomNotAvailable:string[],
   roomFacility: Facility[];
   roomCategoryTypeTitle: string;
   roomOriginalPrice: number;
@@ -19,6 +27,10 @@ interface HotelFacility {
 }
 
 interface HotelCategory {
+
+  totalRooms:number,
+  Occupied:number,
+  vacant:number,
   hotelRoomType: string;
   hotelImage: string;
   hotelRoomSize: number;
@@ -78,6 +90,8 @@ export interface HotelDocument extends Document {
     hotelNotAvailable: string[];
     hotelavailableDateUpto: string;
     packageOptions: PackageOption[];
+    orders:string,
+    guestReviewId:string
   }[];
 }
 
@@ -114,6 +128,9 @@ const hotelSchema = new Schema<HotelDocument>({
       facilities: [String],
       hotelAllRoomTypes: [
         {
+          totalRooms:Number,
+          Occupied:Number,
+            vacant:Number,
           hotelRoomType: String,
           hotelImage: String,
           hotelRoomSize: Number,
@@ -126,6 +143,14 @@ const hotelSchema = new Schema<HotelDocument>({
                   code: String,
                 },
               ],
+              roomNumber:String,
+              customerEmail:String,
+              roomOccupied:{type:Boolean,default :false},
+              checkIn:{type:Boolean,default :false},
+
+              roomPerChildren:Number,
+               roomPerAdults:Number,
+               roomNotAvailable:[String],
               roomCategoryTypeTitle: String,
               roomOriginalPrice: Number,
               roomDiscountInPercentage: Number,
@@ -153,6 +178,10 @@ const hotelSchema = new Schema<HotelDocument>({
       ],
       hotelNotAvailable: [String],
       hotelavailableDateUpto: String,
+      orders:String,
+      guestReviewId:String,
+
+
     },
   ],
 });

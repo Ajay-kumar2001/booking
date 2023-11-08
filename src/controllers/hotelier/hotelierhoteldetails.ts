@@ -18,43 +18,44 @@ export const hotelierhoteldetails = async (
   next: NextFunction
 ): Promise<void> => {
   try {
-    // const hotelierHotelDetails: any = await draftStorage.find({
-    //   $and: [
-    //     { Adminemail: req.email },
-    //     { status: true },
-    //     {"hotelsList.hotelStatus":true}
-    //   ],
-    // });
-    const hotelierHotelDetails = await draftStorage.aggregate([
-      {
-        $match: { $and: [{ Adminemail: req.email }, { status: true }] }
-      },
-      {
-        $unwind: { path: "$hotelsList" }
-      },
-      {
-        $match: { "hotelsList.hotelStatus": true }
-      },
-      {
-        $group: {
-          _id: {
-            city: "$city",       
-            state: "$state",     
-            country: "$country"  
-          },
-          hotelsList: { $push: "$hotelsList" }// pushing the hotels in to hotelsList
-        }
-      },
-      {
-        $project: {
-          _id: 0, // Exclude the _id field
-          city: "$_id.city",
-          state: "$_id.state",
-          country: "$_id.country",
-          hotelsList: 1 // Include the hotelsList field
-        }
-      }
-    ]).exec();
+    const hotelierHotelDetails: any = await draftStorage.find({
+      $and: [
+        { Adminemail: req.email },
+        { status: true },
+        {"hotelsList.hotelStatus":true}
+      ],
+    });
+    // const hotelierHotelDetails = await draftStorage.aggregate([
+    //   {
+    //     $match: { $and: [{ Adminemail: req.email }, { status: true }] }
+    //   },
+    //   {
+    //     $unwind: { path: "$hotelsList" }
+    //   },
+    //   {
+    //     $match: { "hotelsList.hotelStatus": true }
+    //   },
+    //   {
+    //     $group: {
+    //       _id: {
+    //          _id:"$_id",
+    //         city: "$city",       
+    //         state: "$state",     
+    //         country: "$country"  
+    //       },
+    //       hotelsList: { $push: "$hotelsList" }// pushing the hotels in to hotelsList
+    //     }
+    //   },
+    //   {
+    //     $project: {
+    //       _id: 0, // Exclude the _id field
+    //       city: "$_id.city",
+    //       state: "$_id.state",
+    //       country: "$_id.country",
+    //       hotelsList: 1 // Include the hotelsList field
+    //     }
+    //   }
+    // ]).exec();
     
     if (hotelierHotelDetails.length) {
       res.status(200).json({

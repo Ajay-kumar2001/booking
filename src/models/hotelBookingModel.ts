@@ -1,4 +1,4 @@
-import mongoose, { Document, Schema } from 'mongoose';
+import mongoose, { Document, Model, Schema } from 'mongoose';
 // Defining  interface for BreakfastObject
 interface Breakfast{
     packageName: string,
@@ -20,6 +20,8 @@ interface HotelPricesDetails{
 // Defining  interface for HotelAllRoomTypes Object
 interface  hotelsCategory{
     hotelFacility: string[],
+    customerEmail:string,
+    roomOccupied:boolean,
     hotelCategoryTypeTitle: string,
     hotelOriginalPrice: number,
     hotelDiscountPrice: number,
@@ -49,28 +51,37 @@ interface IPayment extends Document {
     razorpay_signature: string;
   }
 
-// Define a document interface for type checking
-export interface HotelBookingDocument extends Document {
+// Define a orders interface for type checking
+export interface Orders {
    id:string,
-   email:string,
+   checkIn:string,
+   userEmail:string,
+   orderId:string,
+  paymentId:string,
     hotelName: string;
     hotelId: string;
     hotelFullAddress: string;
     hotelImage: string;
-    checkInDate: Date;
-    checkOutDate: Date;
+    checkInDate: string;
+    checkOutDate: string;
     noOfDays: number;
     noOfGuest: number;
     onlinePaymentMethod: boolean;
     offlinePaymentMethod: boolean;
+    totalOrderPrice:number,
     breakfast: Breakfast;
     hotelPricesDetails: HotelPricesDetails;
     hotelAllRoomTypes: HotelAllRoomTypes;
     guestDetails: GuestDetails;
     paymentDetails:IPayment
   }
-  
-
+  export interface HotelBookingDocument extends Document {
+    hotelId:string,
+    docId:string,
+    hotelName:string,
+    hotelierEmail:string,
+    orders:Orders[]
+  }
 // Define a schema for the "breakfast" object
 const BreakfastSchema = new Schema<Breakfast>({
   packageName: String,
@@ -100,6 +111,8 @@ const HotelAllRoomTypesSchema = new Schema<HotelAllRoomTypes>({
   hotelRoomBedType: String,
   hotelsCategory: {
     hotelFacility: [String],
+    customerEmail:String,
+    roomOccupied:Boolean,
     hotelCategoryTypeTitle: String,
     hotelOriginalPrice: Number,
     hotelDiscountPrice: Number,
@@ -121,28 +134,40 @@ const paymentSchema = new Schema<IPayment>({
     razorpay_signature: { type: String, required: true },
   });
 // Define the main schema for the entire document
-const HotelBookingSchema = new Schema({
+const OrderSchema = new Schema({
   id:String,
-  email:String,
+  checkIn:{type:Boolean,default:false},
+
+  userEmail:String,
+  orderId:String,
+  paymentId:String,
   hotelName: String,
   hotelId: String,
   hotelFullAddress: String,
   hotelImage: String,
-  checkInDate: Date,
-  checkOutDate: Date,
+  checkInDate: String,
+  checkOutDate: String,
   noOfDays: Number,
   noOfGuest: Number,
   onlinePaymentMethod: Boolean,
   offlinePaymentMethod: Boolean,
+  totalOrderPrice:Number,
   breakfast:{type: BreakfastSchema,default:null},
   hotelPricesDetails: {type:HotelPricesDetailsSchema,default:null},
   hotelAllRoomTypes: {type:HotelAllRoomTypesSchema,default:null},
   guestDetails:{type: GuestDetailsSchema,default:null},
   paymentDetails:{type:paymentSchema,default:null}
 });
+const HotelBookingSchema=new Schema<HotelBookingDocument>({
+  hotelId:String,
+    docId:String,
+    hotelName:String,
+    hotelierEmail:String,
+  orders:[OrderSchema]
+})
 
 // Create a model from the schema
-export const HotelBookingModel = mongoose.model<HotelBookingDocument>('HotelBooking', HotelBookingSchema);
+export const HotelBookingModel :Model<HotelBookingDocument>= mongoose.model<HotelBookingDocument>('HotelBooking', HotelBookingSchema);
 
 // Export the model and document interface
 

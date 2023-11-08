@@ -2,7 +2,7 @@ import { NextFunction } from "express";
 import { CustomRequest } from "../../utils/request-model";
 import draftStorage from "../../models/draftModel";
 import { CustomError } from "../../utils/CustomError";
-import { Query } from "../../utils/query-interface -for-search";
+import { SearchQuery } from "../../utils/query-interface -for-search";
 import { querySchema } from "../../validations/searchParamsValidatn";
 import { number } from "joi";
 /**
@@ -20,7 +20,7 @@ export const searching = async (
   req: CustomRequest,
   res: any,
   next: NextFunction,
-  queryParams: Query
+  queryParams: SearchQuery
 ): Promise<void> => {
   try {
     //validating the query params
@@ -30,9 +30,10 @@ export const searching = async (
         new CustomError(400, "failed", "provoid the valid query params", error)
       );
     } else {
-      const { city, check_in_date, check_out_date, roomperguest } = value;
+      const { city, check_in_date, check_out_date,roomPerAdults,roomPerChildren } = value as SearchQuery;
 
       const checkInDate = check_in_date.split("T")[0];
+      console.log(checkInDate)
       const totalHotelList = await draftStorage
         .aggregate([
           { $match: { city: city } },
@@ -40,12 +41,17 @@ export const searching = async (
           {
             $match: {
               "hotelsList.hotelNotAvailable": { $nin: [checkInDate] },
-              "hotelsList.roomperguest": { $lte: roomperguest },
             },
           },
+          {$unwind:{path:"$hotelsList.hotelAllRoomTypes"}},
+          {$unwind:{path:"$hotelsList.hotelAllRoomTypes.hotelsCategories"}},
+          {$match:{
+          "hotelsList.hotelAllRoomTypes.hotelsCategories.roomPerChildren":{$gte:roomPerChildren},
+          "hotelsList.hotelAllRoomTypes.hotelsCategories.roomPerAdults":{$gte:roomPerAdults}}
+        }
         ])
         .exec();
-
+        console.log("from searching  ",totalHotelList)
       if (totalHotelList.length) {
         res.status(200).json({
           code: res.statusCode,
@@ -71,4 +77,4 @@ export const searching = async (
       )
     );
   }
-};
+}

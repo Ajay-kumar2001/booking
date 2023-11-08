@@ -7,7 +7,7 @@ import { totalhoteldetails } from "../users/totalhoteldetails";
 import { searching } from "../users/searching";
 import { hotelierhoteldetails } from "./hotelierhoteldetails";
 import { existHotelDraft } from "./existhoteldraft";
-import { Query } from "../../utils/query-interface -for-search";
+import { SearchQuery } from "../../utils/query-interface -for-search";
 import { querySchema } from "../../validations/searchParamsValidatn";
 // method for sending the draftstorage data
 /**

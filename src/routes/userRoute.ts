@@ -18,6 +18,20 @@ import { getKey } from "../controllers/payments/getRazorpayKey";
 import rateLimit from "express-rate-limit";
 import { rateLimiter } from "../middlewares/rateLimitHandler";
 import {test} from "../controllers/hotelier/text";
+import {guestReviews} from "../controllers/users/guestReviews"
+import { userTest } from "../controllers/users/userTest";
+import { getOrders } from "../controllers/hotelier/getOrders";
+import { getHotelReviews } from "../controllers/hotelier/getHotelReviews";
+import { totalOrders } from "../controllers/hotelier/totalOrders";
+import { gettingUserUpcomingOrders } from "../controllers/users/gettingUserUpcomingOrders";
+import { gettinguserConfirmedOrders } from "../controllers/users/gettinguserConfirmedOrders";
+import { searchingWithCountrty } from "../controllers/users/searchingWithCountry";
+import { searchTest } from "../controllers/users/searchTest";
+import { hotelOrdersSearching } from "../controllers/hotelier/hotelOrdesSearching";
+import { sendingEmail } from "../controllers/hotelier/sendingEmail";
+import { verifyOtp } from "../controllers/hotelier/verifyingOTP";
+import { checkIn } from "../controllers/hotelier/checkIn";
+import { roomsCheckOut } from "../controllers/hotelier/roomsCheckOut";
 
 const userRoute = express.Router();
 /**
@@ -261,7 +275,7 @@ userRoute.post("/login", login);
  *         packageOriginalPrice:
  *           type: number
  */
-userRoute.post("/hoteldetails",tokenVerification,hotelDetails)
+userRoute.post("/hoteldetails",roleBasedAccess(["hotelier"]),tokenVerification,hotelDetails)
 /**
  * @swagger
  * /users/hoteldetails/{draftId}:
@@ -591,7 +605,7 @@ userRoute.get("/particularhotels",roleBasedAccess(["hotelier"]),tokenVerificatio
  *                   example: "Internal server error"
  *                   description: A message indicating an internal server error.
  */
-userRoute.delete("/hotels",deletingParticularHotel)
+userRoute.delete("/hotels",roleBasedAccess(["hotelier"]),tokenVerification,deletingParticularHotel)
 /**
  * @swagger
  * /users/hotels/bookingdetails:
@@ -759,6 +773,8 @@ userRoute.delete("/hotels",deletingParticularHotel)
  */
 
 userRoute.post("/hotels/bookingdetails",tokenVerification,hotelBookingDetals)
+
+
 /**
  * @swagger
  * /users/checkout:
@@ -949,6 +965,19 @@ userRoute.get("/getkeys",rateLimiter,getKey)
 
 
 userRoute.post("/paymentverification",tokenVerification, paymentVerification);
-userRoute.get("/test",tokenVerification,test)
+userRoute.post("/hotels/guest-reviews",tokenVerification,guestReviews)
+userRoute.get("/hotel/orders",roleBasedAccess(["hotelier"]),tokenVerification,getOrders)
+userRoute.get("/hotel/reviews/:id",getHotelReviews)
+userRoute.get("/orders",totalOrders)
+userRoute.get("/upcoming-orders",tokenVerification,gettingUserUpcomingOrders)
+userRoute.get("/Confirmed-Orders",tokenVerification,gettinguserConfirmedOrders)
+userRoute.get("/hotels",searchingWithCountrty)
+userRoute.post("/hotel/orders",hotelOrdersSearching)
+userRoute.post("/hotel/check-in",checkIn)
+userRoute.post("/hotel/check-out",roomsCheckOut)
+userRoute.post("/send-email",tokenVerification,sendingEmail)
+userRoute.post("/verify",verifyOtp)
+userRoute.get("/test",searchTest)
+userRoute.post("/user-test",)
 
 export default userRoute;

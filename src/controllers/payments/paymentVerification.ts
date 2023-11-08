@@ -1,9 +1,11 @@
-import { Request, Response } from "express";
+import {  Response } from "express";
 import crypto from "crypto";
-import { IPayment, PaymentModel } from "../../models/paymentModel";
+import { Payment, PaymentModel } from "../../models/paymentModel";
+import { CustomRequest } from "../../utils/request-model";
+import userModel from "../../models/userModel";
 
 export const paymentVerification = async (
-  req: Request,
+  req: CustomRequest,
   res: Response
 ): Promise<void> => {
   try {
@@ -20,11 +22,16 @@ export const paymentVerification = async (
         .update(body.toString())
         .digest("hex");
       // Checking the generated signature and received signature
-      if (razorpay_signature === expectedSignature) {
-        const paymentDetails: IPayment = new PaymentModel({
+      const user =await userModel.findOne({_id:req.id})
+      if ((razorpay_signature === expectedSignature)&&user) {
+        const paymentDetails: Payment = new PaymentModel({
+          userId: user.id,
+          userName:user.name,
+          customerEmail:user.email,
           razorpay_payment_id,
           razorpay_order_id,
           razorpay_signature,
+          userEmail:req.email
         });
         // Storing the payment details
         if (paymentDetails) {

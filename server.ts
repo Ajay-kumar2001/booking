@@ -10,12 +10,11 @@ const DB =
     String(process.env.DATABASE_PASSWORD)
   ) || "";
 
-
 const port: any = process.env.PORT || 3000;
 const ipAddress: string = process.env.IP_ADDRESS || "";
 const db_url: string = process.env.DB_URL || "";
-console.log("=========", db_url,ipAddress)
-mongoose.connect(db_url).then(() => console.log("DB connected")).catch((erroe)=>console.log("DB not connected"));
+// mongoose.set('debug', true)
+mongoose.connect(db_url).then(() => console.log("DB connected"));
 
 app.listen(port, ipAddress, () => {
   console.log(`app is running on  http//:${ipAddress}:${port}`);
