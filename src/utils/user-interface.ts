@@ -7,5 +7,3 @@ export interface User extends Document {
   password: String;
   confirmpassword: String;
 }
-
-

@@ -2,6 +2,7 @@
 // import { HotelDocument } from "../utils/hotel-interface";
 // import { boolean } from "joi";
 
+import { number } from "joi";
 import mongoose, { Schema, Document, Model } from "mongoose";
 
 interface Facility {
@@ -10,15 +11,15 @@ interface Facility {
 }
 
 interface HotelFacility {
-  hotelFacility: Facility[];
-  hotelCategoryTypeTitle: string;
-  hotelOriginalPrice: number;
-  hotelDiscountPrice: number;
-  hotelTaxesPrice: number;
+  roomFacility: Facility[];
+  roomCategoryTypeTitle: string;
+  roomOriginalPrice: number;
+  roomDiscountInPercentage: number;
+  roomServicesPrice: number;
 }
 
 interface HotelCategory {
-  hotelType: string;
+  hotelRoomType: string;
   hotelImage: string;
   hotelRoomSize: number;
   hotelRoomBedType: string;
@@ -35,12 +36,14 @@ interface PackageOption {
     name: string;
   };
   packageOriginalPrice: number;
+  packageTime:number,
+  packagePerson:number
 }
 interface hotelPricesDetails {
-  hoteTotalPrice: number;
+  hotelTotalPrice: number;
   hotelDiscountInPercent: number;
   hotelTaxStateInPercent: number;
-  hoteltTaxCenterInPercent: number;
+  hotelTaxCenterInPercent: number;
   hotelServicePrice: number;
 }
 
@@ -50,13 +53,15 @@ export interface HotelDocument extends Document {
   Adminemail: string | undefined;
   country: string;
   state: string;
-  pincode: string;
+  pincode: number;
   city: string;
   apartmentname: string;
   streetname: string;
   hotelsList: {
+    hotelStatus:boolean,
     hotelName: string;
     hotelPrice: number;
+    hotelAddress:string,
     hotelImage: string[];
     roomperguest: number;
     hotelRelatedImages: string[];
@@ -66,8 +71,8 @@ export interface HotelDocument extends Document {
     hotelDescription: string;
     facilities: string[];
     hotelAllRoomTypes: HotelCategory[];
-    latitude: string;
-    longitude: string;
+    latitude: number;
+    longitude: number;
     selectedFacilities: string[];
     houserules: HouseRules[];
     hotelNotAvailable: string[];
@@ -82,52 +87,55 @@ const hotelSchema = new Schema<HotelDocument>({
   Adminemail: String,
   country: String,
   state: String,
-  pincode: String,
+  pincode: Number,
   city: String,
   apartmentname: String,
   streetname: String,
   hotelsList: [
     {
+      hotelStatus:{type:Boolean ,default:false},
+
       hotelName: String,
       hotelPrice: Number,
+      hotelAddress:String,
       hotelImage: [String],
       roomperguest: Number,
       hotelRelatedImages: [String],
       rating: Number,
       hotelType: String,
       hotelPricesDetails: {
-        hoteTotalPrice: Number,
+        hotelTotalPrice: Number,
         hotelDiscountInPercent: Number,
         hotelTaxStateInPercent: Number,
-        hoteltTaxCenterInPercent: Number,
+        hotelTaxCenterInPercent: Number,
         hotelServicePrice: Number,
       },
       hotelDescription: String,
       facilities: [String],
       hotelAllRoomTypes: [
         {
-          hotelType: String,
+          hotelRoomType: String,
           hotelImage: String,
           hotelRoomSize: Number,
           hotelRoomBedType: String,
           hotelsCategories: [
             {
-              hotelFacility: [
+              roomFacility: [
                 {
                   title: String,
                   code: String,
                 },
               ],
-              hotelCategoryTypeTitle: String,
-              hotelOriginalPrice: Number,
-              hotelDiscountPrice: Number,
-              hotelTaxesPrice: Number,
+              roomCategoryTypeTitle: String,
+              roomOriginalPrice: Number,
+              roomDiscountInPercentage: Number,
+              roomServicesPrice: Number,
             },
           ],
         },
       ],
-      latitude: String,
-      longitude: String,
+      latitude: Number,
+      longitude: Number,
       selectedFacilities: [String],
       houserules: [
         {
@@ -139,6 +147,8 @@ const hotelSchema = new Schema<HotelDocument>({
           packageName: { name: String },
           packageOriginalPrice: Number,
           packageDiscountPrice: Number,
+          packageTime:Number,
+          packagePerson:Number
         },
       ],
       hotelNotAvailable: [String],
@@ -148,6 +158,7 @@ const hotelSchema = new Schema<HotelDocument>({
 });
 
 // Create and export the MongoDB model
+
 const draftStorage: Model<HotelDocument> = mongoose.model<HotelDocument>(
   "draft",
   hotelSchema

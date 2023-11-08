@@ -1,8 +1,7 @@
 import { Request } from "express";
 
-
 export interface CustomRequest extends Request {
-  email?:string;
+  email?: string;
+  id?:string
   requestTime?: string;
-  
 }
